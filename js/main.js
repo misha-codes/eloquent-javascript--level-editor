@@ -230,7 +230,9 @@ function copyLevel() {
 
 gui.appendChild(functionalRow);
 
-/*``````````````````````````information / tip area````````````````````````````*/
+/*//////////////////////////////////////////////////////////////////////////////
+-                            INFORMATION/FEEDBACK                              -
+//////////////////////////////////////////////////////////////////////////////*/
 let infoRow = document.createElement('div');
 let info = document.createElement('textarea');
 info.className = 'info';
