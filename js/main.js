@@ -253,6 +253,6 @@ document.querySelector('.field').value = `
 #@ooooo@ooo@oooo|+|oo#
 #@@@o@@@o@@@ooooovooo#
 ######################`;
-confirmNew();
+confirmLoad();
 paletteButtons[1].dispatchEvent(new MouseEvent('click'));
 info.textContent = 'I am a small level editor for the EJS platformer project!';
