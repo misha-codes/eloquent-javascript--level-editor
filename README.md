@@ -5,8 +5,8 @@ You can try it out at: https://misha-codes.github.io/eloquent-javascript--level-
 
 Started reading the platformer chapter of EJS but got immediately sidetracked  
 into making this thing since working with level strings in a regular text editor is very annoying.  
-It provides some very basic text-based grid editing  
-functionality and allows you to save your work or open an existing level   
+It provides some very basic text-based grid editing functionality  
+and allows you to save your work or open an existing level   
 via copy/paste. 
 
 Can easily be configured to work with, say, electronic life project from  
