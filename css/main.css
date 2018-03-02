@@ -1,0 +1,83 @@
+#view {
+  padding-bottom: 3px;
+}
+
+.cell {
+  width: 20px; height: 20px;
+  border: 1px solid white;
+  padding: 3px;
+  background-color: rgb(52, 166, 251);
+  color: white;
+  text-align: center; font-size: 17px;
+  font-family: sans-serif;
+  display: inline-block;
+
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+button {
+  border: 2px solid white;
+  text-align: center;
+  font-size: 17px;
+  font-family: sans-serif;
+  padding: 4px;
+  color: rgb(64, 64, 64);
+  background-color: white;
+  height: 45px;
+}
+button.palette {
+  width: 45px;
+}
+button.palette.selected {
+  background-color: rgb(64, 64, 64);
+  color: white;
+}
+button:active {
+  background-color: rgb(64, 64, 64);
+  color: white;
+}
+button:hover {
+  border: 2px solid rgb(64, 64, 64);
+}
+button.palette, .dialog > button {
+  width: 45px;
+}
+
+#gui > div {
+  border: none;
+  font-size: 17px; font-family: sans-serif;
+  color: rgb(64, 64, 64);
+  background-color: white;
+}
+
+textarea, input, button {
+  outline: none;
+}
+textarea {
+  overflow: hidden;
+}
+.field {
+  width: 40px; height: 15px;
+  padding: none;
+  border: none;
+  border-bottom: 2px solid rgb(64, 64, 64);
+  resize: none;
+  font-size: 15px;
+  font-family: monospace;
+}
+.info {
+  width: 170px;
+  padding: 5px;
+  resize: none;
+  border: none;
+  font-size: 14px;
+  font-style: italic;
+  font-family: monospace;
+  white-space: pre-line;
+  color: transparent;
+  text-shadow: 0 0 0 white;
+  background-color: rgb(64, 64, 64);
+}
