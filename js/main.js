@@ -176,12 +176,6 @@ function brush(event) {
   }
 }
 
-const DIRECTIONS = [
-            [ 0, -1],
-  [-1,  0],           [ 1,  0],
-            [ 0,  1]
-];
-const inRange = (a, min, max) => (a >= min && a < max);
 function fill(event) {
   if (
     event.buttons == 1 &&
@@ -199,17 +193,44 @@ function fill(event) {
     let queue = [{cell: startCell, x: startX, y: startY}];
 
     function flood(cell, x, y) {
-      applyEdit(cell);
-
-      for (let [dirX, dirY] of DIRECTIONS) {
-        let neighborX = x + dirX;
-        let neighborY = y + dirY;
-        if (inRange(neighborX, 0, width) && inRange(neighborY, 0, height)) {
-          let neighbor = grid[neighborY][neighborX];
-          if (neighbor.textContent == targetChar) {
-            queue.push({cell: neighbor, x: neighborX, y: neighborY});
+      if (cell.textContent != targetChar) return ;
+      for (let westX = x; westX >= 0; westX--) {
+        let currentNeighbor = grid[y][westX];
+        if (currentNeighbor.textContent == targetChar) {
+          applyEdit(currentNeighbor);
+          if (
+            y > 0 && grid[y - 1][westX] &&
+            grid[y - 1][westX].textContent == targetChar
+          ) {
+            queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
+          }
+          if (
+            y < width - 1 && grid[y + 1][westX] &&
+            grid[y + 1][westX].textContent == targetChar
+          ) {
+            queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
           }
         }
+        else break;
+      }
+      for (let eastX = x + 1; eastX < width; eastX++) {
+        let currentNeighbor = grid[y][eastX];
+        if (currentNeighbor.textContent == targetChar) {
+          applyEdit(currentNeighbor);
+          if (
+            y > 0 && grid[y - 1][eastX] &&
+            grid[y - 1][eastX].textContent == targetChar
+          ) {
+            queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
+          }
+          if (
+            y < width - 1 && grid[y + 1][eastX] &&
+            grid[y + 1][eastX].textContent == targetChar
+          ) {
+            queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
+          }
+        }
+        else break;
       }
     }
 
