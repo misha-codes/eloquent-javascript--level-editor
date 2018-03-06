@@ -1,88 +1,7 @@
 /*//////////////////////////////////////////////////////////////////////////////
--                                   VIEW                                       -
+-                                   MENU                                       -
 //////////////////////////////////////////////////////////////////////////////*/
-function renderView(width, height) {
-  Array.from(document.querySelectorAll('#view > div'))
-    .forEach(div => div.remove());
-  let view = document.querySelector('#view');
-  for (let y = 0; y < height; y++) {
-    let row = document.createElement('div');
-    for (let x = 0; x < width; x++) {
-      let cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.textContent = '.';
-      cell.style.left = `${x * 20}px`;
-      cell.style.top = `${y * 20}px`;
-      cell.addEventListener('mousedown', draw);
-      cell.addEventListener('mouseover', draw);
-      row.appendChild(cell);
-    }
-    view.appendChild(row);
-  }
-}
-function draw(event) {
-  if (event.buttons == 1) {
-    let cell = event.target;
-    cell.textContent = brush.char;
-    cell.style.backgroundColor = brush.color;
-    if (cell.style.backgroundColor == 'rgb(255, 255, 255)') {
-      cell.style.color = 'rgb(64, 64, 64)';
-    }
-    else {
-      cell.style.color = 'rgb(255, 255, 255)';
-    }
-  }
-}
-
-/*//////////////////////////////////////////////////////////////////////////////
--                             PALETTE & BRUSH                                  -
-//////////////////////////////////////////////////////////////////////////////*/
-const PALETTE = {
-  '.': {color: 'rgb(52, 166, 251)', help: 'empty'},
-  '#': {color: 'rgb(255, 255, 255)', help: 'wall'},
-  '@': {color: 'rgb(64, 64, 64)', help: 'player'},
-  'o': {color: 'rgb(241, 229, 89)', help: 'coin'},
-  '+': {color: 'rgb(255, 100, 100)', help: 'lava'},
-  '=': {color: 'rgb(255, 100, 100)', help: 'moving lava (horizontal)'},
-  '|': {color: 'rgb(255, 100, 100)', help: 'moving lava (vertical)'},
-  'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'}
-};
-let brush = {char: '.', color: 'grey'};
-
-/*//////////////////////////////////////////////////////////////////////////////
--                                 GUI BUTTONS                                  -
-//////////////////////////////////////////////////////////////////////////////*/
-let gui = document.querySelector('#gui');
-
-/*..............................palette buttons...............................*/
-let chars = Object.keys(PALETTE);
-let paletteButtons = [];
-let row = document.createElement('div');
-for (let i = 0; i < chars.length; i++) {
-  let char = chars[i];
-  let button = document.createElement('button');
-  button.className = 'palette';
-  button.textContent = chars[i];
-  button.addEventListener('click', paletteSelect);
-  paletteButtons.push(button);
-  row.appendChild(button);
-
-  if ((i + 1) % 4 == 0) {
-    gui.appendChild(row);
-    row = document.createElement('div');
-  }
-}
-function paletteSelect(event) {
-  let button = event.target;
-  paletteButtons.forEach(b => b.className = 'palette');
-  button.className = 'palette selected';
-  brush.char = button.textContent;
-  brush.color = PALETTE[brush.char].color;
-  info.textContent = PALETTE[brush.char].help;
-}
-
-/*..............................new | load | copy.............................*/
-let functionalRow = document.createElement('div')
+let menu = document.querySelector('#menu');
 
 /*```````````````````````````````````new``````````````````````````````````````*/
 function removeCurrentDialog() {
@@ -94,7 +13,7 @@ let newButton = document.createElement('button');
 newButton.textContent = 'new';
 newButton.style.width = '60px';
 newButton.addEventListener('click', showNewDialog);
-functionalRow.appendChild(newButton);
+menu.appendChild(newButton);
 
 function showNewDialog() {
   removeCurrentDialog();
@@ -125,8 +44,7 @@ function showNewDialog() {
   no.addEventListener('click', removeCurrentDialog);
   dialog.appendChild(no);
 
-  let guiRows = document.querySelectorAll('#gui > div');
-  guiRows[0].appendChild(dialog);
+  menu.appendChild(dialog);
 }
 
 function confirmNew() {
@@ -139,14 +57,14 @@ function confirmNew() {
   }
 }
 
-/*`````````````````````````````````load``````````````````````````````````````*/
-let loadButton = document.createElement('button');
-loadButton.textContent = 'load';
-loadButton.style.width = '60px';
-loadButton.addEventListener('click', showLoadDialog);
-functionalRow.appendChild(loadButton);
+/*`````````````````````````````````open``````````````````````````````````````*/
+let openButton = document.createElement('button');
+openButton.textContent = 'open';
+openButton.style.width = '60px';
+openButton.addEventListener('click', showOpenDialog);
+menu.appendChild(openButton);
 
-function showLoadDialog() {
+function showOpenDialog() {
   removeCurrentDialog();
 
   info.textContent = 'please paste a level string to parse';
@@ -163,7 +81,7 @@ function showLoadDialog() {
 
   let ok = document.createElement('button');
   ok.textContent = '🗸';
-  ok.addEventListener('click', confirmLoad);
+  ok.addEventListener('click', confirmOpen);
   dialog.appendChild(ok);
 
   let no = document.createElement('button');
@@ -171,11 +89,10 @@ function showLoadDialog() {
   no.addEventListener('click', removeCurrentDialog);
   dialog.appendChild(no);
 
-  let guiRows = document.querySelectorAll('#gui > div');
-  guiRows[0].appendChild(dialog);
+  menu.appendChild(dialog);
 }
 
-function confirmLoad() {
+function confirmOpen() {
   let level = document.querySelector('textarea').value.trim().split('\n');
   for (let i = 0; i < level.length - 2; i++) {
     if (level[i].length != level[i + 1].length) {
@@ -213,7 +130,7 @@ let copyButton = document.createElement('button');
 copyButton.textContent = 'copy';
 copyButton.style.width = '60px';
 copyButton.addEventListener('click', copyLevel);
-functionalRow.appendChild(copyButton);
+menu.appendChild(copyButton);
 function copyLevel() {
   let level = '';
   let cells = Array.from(document.querySelectorAll('.cell'));
@@ -228,23 +145,105 @@ function copyLevel() {
   info.textContent = 'level copied to clipboard';
 }
 
-gui.appendChild(functionalRow);
+/*//////////////////////////////////////////////////////////////////////////////
+-                             PALETTE & BRUSH                                  -
+//////////////////////////////////////////////////////////////////////////////*/
+const PALETTE = {
+  '.': {color: 'rgb(52, 166, 251)', help: 'empty'},
+  '#': {color: 'rgb(255, 255, 255)', help: 'wall'},
+  '@': {color: 'rgb(64, 64, 64)', help: 'player'},
+  'o': {color: 'rgb(241, 229, 89)', help: 'coin'},
+  '+': {color: 'rgb(255, 100, 100)', help: 'lava'},
+  '=': {color: 'rgb(255, 100, 100)', help: 'moving lava (horizontal)'},
+  '|': {color: 'rgb(255, 100, 100)', help: 'moving lava (vertical)'},
+  'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'}
+};
+let brush = {char: '.', color: 'grey'};
+
+/*//////////////////////////////////////////////////////////////////////////////
+-                                 TOOLBAR                                      -
+//////////////////////////////////////////////////////////////////////////////*/
+let toolbar = document.querySelector('#toolbar');
+
+/*..............................palette buttons...............................*/
+let chars = Object.keys(PALETTE);
+let paletteButtons = [];
+let row = document.createElement('div');
+for (let i = 0; i < chars.length; i++) {
+  let char = chars[i];
+  let button = document.createElement('button');
+  button.className = 'palette';
+  button.textContent = chars[i];
+  button.addEventListener('click', paletteSelect);
+  paletteButtons.push(button);
+  row.appendChild(button);
+
+  if ((i + 1) % 4 == 0) {
+    toolbar.appendChild(row);
+    row = document.createElement('div');
+  }
+}
+function paletteSelect(event) {
+  let button = event.target;
+  paletteButtons.forEach(b => b.className = 'palette');
+  button.className = 'palette selected';
+  brush.char = button.textContent;
+  brush.color = PALETTE[brush.char].color;
+  info.textContent = PALETTE[brush.char].help;
+}
 
 /*//////////////////////////////////////////////////////////////////////////////
 -                            INFORMATION/FEEDBACK                              -
 //////////////////////////////////////////////////////////////////////////////*/
-let infoRow = document.createElement('div');
+let infoPanel = document.createElement('div');
 let info = document.createElement('textarea');
 info.className = 'info';
 info.rows = 3;
 info.readOnly = true;
-infoRow.appendChild(info);
-gui.appendChild(infoRow);
+infoPanel.appendChild(info);
+toolbar.appendChild(infoPanel);
+
+/*//////////////////////////////////////////////////////////////////////////////
+-                                   VIEW                                       -
+//////////////////////////////////////////////////////////////////////////////*/
+let view = document.querySelector('#view');
+view.style.left = `${toolbar.getBoundingClientRect().right + 8}px`;
+function renderView(width, height) {
+  Array.from(document.querySelectorAll('#view > div'))
+    .forEach(div => div.remove());
+  for (let y = 0; y < height; y++) {
+    let row = document.createElement('div');
+    for (let x = 0; x < width; x++) {
+      let cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = '.';
+      cell.style.left = `${x * 20}px`;
+      cell.style.top = `${y * 20}px`;
+      cell.addEventListener('mousedown', draw);
+      cell.addEventListener('mouseover', draw);
+      row.appendChild(cell);
+    }
+    view.appendChild(row);
+  }
+}
+function draw(event) {
+  if (event.buttons == 1) {
+    let cell = event.target;
+    cell.textContent = brush.char;
+    cell.style.backgroundColor = brush.color;
+    if (cell.style.backgroundColor == 'rgb(255, 255, 255)') {
+      cell.style.color = 'rgb(64, 64, 64)';
+    }
+    else {
+      cell.style.color = 'rgb(255, 255, 255)';
+    }
+  }
+}
 
 /*//////////////////////////////////////////////////////////////////////////////
 -                                INITIAL SETUP                                 -
 //////////////////////////////////////////////////////////////////////////////*/
-showLoadDialog();
+showOpenDialog();
 document.querySelector('.field').value = `
 ######################
 #@@@ooo@o@@@ooo==o==o#
@@ -255,6 +254,6 @@ document.querySelector('.field').value = `
 #@ooooo@ooo@oooo|+|oo#
 #@@@o@@@o@@@ooooovooo#
 ######################`;
-confirmLoad();
+confirmOpen();
 paletteButtons[1].dispatchEvent(new MouseEvent('click'));
 info.textContent = 'I am a small level editor for the EJS platformer project!';

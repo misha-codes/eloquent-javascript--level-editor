@@ -1,5 +1,7 @@
 #view {
-  padding-bottom: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.24);
+  position: absolute;
+  z-index: 0;
 }
 #view > div {
   white-space: nowrap;
@@ -46,11 +48,22 @@ button.palette, .dialog > button {
   width: 45px;
 }
 
-#gui > div {
-  border: none;
+#menu, #toolbar {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   font-size: 17px; font-family: sans-serif;
   color: rgb(64, 64, 64);
   background-color: white;
+  position: fixed;
+  z-index: 1;
+}
+
+#menu {
+  padding: 1px;
+}
+#toolbar {
+  top: 60px;
+  padding: 1px;
+  width: 180px;
 }
 
 textarea, input, button {
@@ -58,6 +71,10 @@ textarea, input, button {
 }
 textarea {
   overflow: hidden;
+}
+.dialog {
+  padding-left: 2px;
+  border-left: 2px solid rgb(64, 64, 64);
 }
 .field {
   width: 40px; height: 15px;
