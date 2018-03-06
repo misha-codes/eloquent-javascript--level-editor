@@ -74,13 +74,13 @@ textarea {
 }
 .dialog {
   padding-left: 2px;
-  border-left: 2px solid rgb(64, 64, 64);
+  border-left: 1px solid rgb(64, 64, 64);
 }
 .field {
   width: 40px; height: 15px;
   padding: none;
   border: none;
-  border-bottom: 2px solid rgb(64, 64, 64);
+  border-bottom: 1px solid rgb(64, 64, 64);
   resize: none;
   font-size: 15px;
   font-family: monospace;

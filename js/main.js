@@ -196,6 +196,7 @@ function paletteSelect(event) {
 -                            INFORMATION/FEEDBACK                              -
 //////////////////////////////////////////////////////////////////////////////*/
 let infoPanel = document.createElement('div');
+infoPanel.style.paddingTop = '1px';
 let info = document.createElement('textarea');
 info.className = 'info';
 info.rows = 3;
