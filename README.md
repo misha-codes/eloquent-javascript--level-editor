@@ -13,8 +13,8 @@ is very inconvenient.
 
 It provides some very basic text-based grid editing functionality  
 and allows you to save your work or open an existing level   
-via copy/paste.
+through copy/pasting.
 
 Can easily be configured to work with the electronic life project from  
 the 2nd edition of EJS or with any other simple char grid project by altering  
-the `PALETTE` constant.
+the `PALETTE` constant and tweaking the `applyEdit` function.

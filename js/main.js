@@ -146,7 +146,7 @@ function copyLevel() {
 }
 
 /*//////////////////////////////////////////////////////////////////////////////
--                             PALETTE & BRUSH                                  -
+-                           PALETTE & EDITING TOOL                             -
 //////////////////////////////////////////////////////////////////////////////*/
 const PALETTE = {
   '.': {color: 'rgb(52, 166, 251)', help: 'empty'},
@@ -158,38 +158,135 @@ const PALETTE = {
   '|': {color: 'rgb(255, 100, 100)', help: 'moving lava (vertical)'},
   'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'}
 };
-let brush = {char: '.', color: 'grey'};
+const TOOLS = [brush, fill];
+let mouseTool = {tool: brush, char: '.', color: 'rgb(52, 166, 251)'};
+function applyEdit(cell) {
+  cell.textContent = mouseTool.char;
+  cell.style.backgroundColor = mouseTool.color;
+  if (cell.style.backgroundColor == 'rgb(255, 255, 255)') {
+    cell.style.color = 'rgb(64, 64, 64)';
+  }
+  else {
+    cell.style.color = 'rgb(255, 255, 255)';
+  }
+}
+function brush(event) {
+  if (event.buttons == 1) {
+    applyEdit(event.target);
+  }
+}
 
+const DIRECTIONS = [
+            [ 0, -1],
+  [-1,  0],           [ 1,  0],
+            [ 0,  1]
+];
+const inRange = (a, min, max) => (a >= min && a < max);
+function fill(event) {
+  if (
+    event.buttons == 1 &&
+    event.type == 'mousedown' &&
+    mouseTool.char != event.target.textContent
+  ) {
+    let rows = Array.from(view.children);
+    let grid = rows.map(row => Array.from(row.children));
+    let startCell = event.target;
+    let startY = rows.indexOf(startCell.parentNode);
+    let startX = grid[startY].indexOf(startCell);
+
+    let width = grid[0].length, height = grid.length;
+    let targetChar = startCell.textContent;
+    let queue = [{cell: startCell, x: startX, y: startY}];
+
+    function flood(cell, x, y) {
+      applyEdit(cell);
+
+      for (let [dirX, dirY] of DIRECTIONS) {
+        let neighborX = x + dirX;
+        let neighborY = y + dirY;
+        if (inRange(neighborX, 0, width) && inRange(neighborY, 0, height)) {
+          let neighbor = grid[neighborY][neighborX];
+          if (neighbor.textContent == targetChar) {
+            queue.push({cell: neighbor, x: neighborX, y: neighborY});
+          }
+        }
+      }
+    }
+
+    for (let {cell, x, y} of queue) {
+      flood(cell, x, y);
+    }
+  }
+}
 /*//////////////////////////////////////////////////////////////////////////////
 -                                 TOOLBAR                                      -
 //////////////////////////////////////////////////////////////////////////////*/
 let toolbar = document.querySelector('#toolbar');
 
+function annotate(button) {
+  button.addEventListener('mouseenter', () => {
+    info.textContent = button.getAttribute('data-help');
+  });
+}
+
+/*................................tool buttons................................*/
+let toolPanel = document.createElement('div');
+toolPanel.style.paddingBottom = '1px';
+let toolButtons = [];
+
+for (let tool of TOOLS) {
+  let button = document.createElement('button');
+  button.className = 'tool';
+  button.functionTool = tool;
+  button.setAttribute('data-help', `${tool.name} tool`);
+  button.textContent = tool.name.slice(0, 2);
+  annotate(button);
+  button.addEventListener('click', toolSelect);
+  toolButtons.push(button);
+  toolPanel.appendChild(button);
+}
+toolbar.appendChild(toolPanel)
+
+function toolSelect(event) {
+  let button = event.target;
+  toolButtons.forEach(b => b.className = 'tool');
+  button.className = 'tool selected';
+  mouseTool.tool = button.functionTool;
+}
+
 /*..............................palette buttons...............................*/
 let chars = Object.keys(PALETTE);
 let paletteButtons = [];
+let palettePanel = document.createElement('div');
+palettePanel.style.borderTop = '1px solid rgb(64, 64, 64)';
+palettePanel.style.borderBottom = palettePanel.style.borderTop
+palettePanel.style.paddingTop = '1px';
+palettePanel.style.paddingBottom = palettePanel.style.paddingTop;
 let row = document.createElement('div');
 for (let i = 0; i < chars.length; i++) {
   let char = chars[i];
   let button = document.createElement('button');
   button.className = 'palette';
-  button.textContent = chars[i];
+  button.setAttribute('data-help', PALETTE[char].help);
+  annotate(button);
+  button.textContent = char;
   button.addEventListener('click', paletteSelect);
   paletteButtons.push(button);
   row.appendChild(button);
 
   if ((i + 1) % 4 == 0) {
-    toolbar.appendChild(row);
+    palettePanel.appendChild(row);
     row = document.createElement('div');
   }
 }
+toolbar.appendChild(palettePanel);
+
 function paletteSelect(event) {
   let button = event.target;
   paletteButtons.forEach(b => b.className = 'palette');
   button.className = 'palette selected';
-  brush.char = button.textContent;
-  brush.color = PALETTE[brush.char].color;
-  info.textContent = PALETTE[brush.char].help;
+  mouseTool.char = button.textContent;
+  mouseTool.color = PALETTE[mouseTool.char].color;
 }
 
 /*//////////////////////////////////////////////////////////////////////////////
@@ -220,25 +317,15 @@ function renderView(width, height) {
       cell.textContent = '.';
       cell.style.left = `${x * 20}px`;
       cell.style.top = `${y * 20}px`;
-      cell.addEventListener('mousedown', draw);
-      cell.addEventListener('mouseover', draw);
+      cell.addEventListener('mousedown', edit);
+      cell.addEventListener('mouseover', edit);
       row.appendChild(cell);
     }
     view.appendChild(row);
   }
 }
-function draw(event) {
-  if (event.buttons == 1) {
-    let cell = event.target;
-    cell.textContent = brush.char;
-    cell.style.backgroundColor = brush.color;
-    if (cell.style.backgroundColor == 'rgb(255, 255, 255)') {
-      cell.style.color = 'rgb(64, 64, 64)';
-    }
-    else {
-      cell.style.color = 'rgb(255, 255, 255)';
-    }
-  }
+function edit(event) {
+  mouseTool.tool(event);
 }
 
 /*//////////////////////////////////////////////////////////////////////////////
@@ -256,5 +343,6 @@ document.querySelector('.field').value = `
 #@@@o@@@o@@@ooooovooo#
 ######################`;
 confirmOpen();
+toolButtons[0].dispatchEvent(new MouseEvent('click'));
 paletteButtons[1].dispatchEvent(new MouseEvent('click'));
 info.textContent = 'I am a small level editor for the EJS platformer project!';

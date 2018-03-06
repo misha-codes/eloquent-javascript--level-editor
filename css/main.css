@@ -34,22 +34,20 @@ button {
   background-color: white;
   height: 45px;
 }
-button.palette {
-  width: 45px;
-}
-button.palette.selected, button:active {
+.selected, button:active {
   background-color: rgb(64, 64, 64);
   color: white;
 }
 button:hover {
   border: 2px solid rgb(64, 64, 64);
 }
-button.palette, .dialog > button {
+.palette, .tool, .dialog > button {
   width: 45px;
 }
 
 #menu, #toolbar {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  padding: 1px; padding-left: 2px; padding-right: 2px;
   font-size: 17px; font-family: sans-serif;
   color: rgb(64, 64, 64);
   background-color: white;
@@ -57,12 +55,8 @@ button.palette, .dialog > button {
   z-index: 1;
 }
 
-#menu {
-  padding: 1px;
-}
 #toolbar {
   top: 60px;
-  padding: 1px;
   width: 180px;
 }
 
