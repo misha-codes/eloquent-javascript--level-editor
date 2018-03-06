@@ -1,6 +1,9 @@
 #view {
   padding-bottom: 3px;
 }
+#view > div {
+  white-space: nowrap;
+}
 
 .cell {
   width: 20px; height: 20px;
