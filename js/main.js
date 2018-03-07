@@ -198,16 +198,10 @@ function fill(event) {
         let currentNeighbor = grid[y][westX];
         if (currentNeighbor.textContent == targetChar) {
           applyEdit(currentNeighbor);
-          if (
-            y > 0 && grid[y - 1][westX] &&
-            grid[y - 1][westX].textContent == targetChar
-          ) {
+          if (y > 0 && grid[y - 1][westX].textContent == targetChar) {
             queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
           }
-          if (
-            y < width - 1 && grid[y + 1][westX] &&
-            grid[y + 1][westX].textContent == targetChar
-          ) {
+          if (y < width - 1 && grid[y + 1][westX].textContent == targetChar) {
             queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
           }
         }
@@ -217,16 +211,10 @@ function fill(event) {
         let currentNeighbor = grid[y][eastX];
         if (currentNeighbor.textContent == targetChar) {
           applyEdit(currentNeighbor);
-          if (
-            y > 0 && grid[y - 1][eastX] &&
-            grid[y - 1][eastX].textContent == targetChar
-          ) {
+          if (y > 0  &&  grid[y - 1][eastX].textContent == targetChar) {
             queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
           }
-          if (
-            y < width - 1 && grid[y + 1][eastX] &&
-            grid[y + 1][eastX].textContent == targetChar
-          ) {
+          if (y < width - 1 && grid[y + 1][eastX].textContent == targetChar) {
             queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
           }
         }
