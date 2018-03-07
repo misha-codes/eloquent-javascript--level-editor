@@ -201,7 +201,7 @@ function fill(event) {
           if (y > 0 && grid[y - 1][westX].textContent == targetChar) {
             queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
           }
-          if (y < width - 1 && grid[y + 1][westX].textContent == targetChar) {
+          if (y < height - 1 && grid[y + 1][westX].textContent == targetChar) {
             queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
           }
         }
@@ -214,7 +214,7 @@ function fill(event) {
           if (y > 0  &&  grid[y - 1][eastX].textContent == targetChar) {
             queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
           }
-          if (y < width - 1 && grid[y + 1][eastX].textContent == targetChar) {
+          if (y < height - 1 && grid[y + 1][eastX].textContent == targetChar) {
             queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
           }
         }
