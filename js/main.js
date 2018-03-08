@@ -36,7 +36,7 @@ function showNewDialog() {
 
   let dialogYes = document.createElement('button');
   dialogYes.innerHTML = '<i class="material-icons md-18">check</i>';
-  dialogYes.addEventListener('click', confirmOpen);
+  dialogYes.addEventListener('click', confirmNew);
   dialog.appendChild(dialogYes);
 
   let dialogNo = document.createElement('button');

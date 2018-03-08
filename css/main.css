@@ -32,7 +32,7 @@ button {
   padding: 4px;
   color: rgb(64, 64, 64);
   background-color: white;
-  height: 40px;
+  height: 45px;
 }
 .selected, button:active {
   background-color: rgb(64, 64, 64);
@@ -42,7 +42,7 @@ button:hover {
   border: 2px solid rgb(64, 64, 64);
 }
 .palette, .tool, .dialog > button {
-  width: 40px;
+  width: 45px;
 }
 
 #menu, #toolbar {
