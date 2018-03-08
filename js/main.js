@@ -162,10 +162,12 @@ const TOOLS = [
   {tool: brush, icon: 'brush'},
   {tool: fill, icon: 'format_color_fill'}
 ];
-let mouseTool = {tool: brush, char: '.', color: 'rgb(52, 166, 251)'};
-function applyEdit(cell) {
-  cell.textContent = mouseTool.char;
-  cell.style.backgroundColor = mouseTool.color;
+
+let mouseTool = {tool: brush, char: '.'};
+
+function applyEdit(cell, char) {
+  cell.textContent = char;
+  cell.style.backgroundColor = PALETTE[char].color;
   if (cell.style.backgroundColor == 'rgb(255, 255, 255)') {
     cell.style.color = 'rgb(64, 64, 64)';
   }
@@ -175,7 +177,8 @@ function applyEdit(cell) {
 }
 function brush(event) {
   if (event.buttons == 1) {
-    applyEdit(event.target);
+    updateHistory(event.target, applyEdit);
+    applyEdit(event.target, mouseTool.char);
   }
 }
 
@@ -185,49 +188,54 @@ function fill(event) {
     event.type == 'mousedown' &&
     mouseTool.char != event.target.textContent
   ) {
-    let rows = Array.from(view.children);
-    let grid = rows.map(row => Array.from(row.children));
-    let startCell = event.target;
-    let startY = rows.indexOf(startCell.parentNode);
-    let startX = grid[startY].indexOf(startCell);
+    function flood(startCell, char) {
+      let rows = Array.from(view.children);
+      let grid = rows.map(row => Array.from(row.children));
+      let width = grid[0].length, height = grid.length;
 
-    let width = grid[0].length, height = grid.length;
-    let targetChar = startCell.textContent;
-    let queue = [{cell: startCell, x: startX, y: startY}];
+      let startY = rows.indexOf(startCell.parentNode);
+      let startX = grid[startY].indexOf(startCell);
 
-    function flood(cell, x, y) {
-      if (cell.textContent != targetChar) return ;
-      for (let westX = x; westX >= 0; westX--) {
-        let currentNeighbor = grid[y][westX];
-        if (currentNeighbor.textContent == targetChar) {
-          applyEdit(currentNeighbor);
-          if (y > 0 && grid[y - 1][westX].textContent == targetChar) {
-            queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
+      let targetChar = startCell.textContent;
+
+      let queue = [{cell: startCell, x: startX, y: startY}];
+
+      function floodRow(cell, x, y) {
+        if (cell.textContent != targetChar) return ;
+        for (let westX = x; westX >= 0; westX--) {
+          let currentNeighbor = grid[y][westX];
+          if (currentNeighbor.textContent == targetChar) {
+            applyEdit(currentNeighbor, char);
+            if (y > 0 && grid[y - 1][westX].textContent == targetChar) {
+              queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
+            }
+            if (y < height - 1 && grid[y + 1][westX].textContent == targetChar) {
+              queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
+            }
           }
-          if (y < height - 1 && grid[y + 1][westX].textContent == targetChar) {
-            queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
-          }
+          else break;
         }
-        else break;
+        for (let eastX = x + 1; eastX < width; eastX++) {
+          let currentNeighbor = grid[y][eastX];
+          if (currentNeighbor.textContent == targetChar) {
+            applyEdit(currentNeighbor, char);
+            if (y > 0  &&  grid[y - 1][eastX].textContent == targetChar) {
+              queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
+            }
+            if (y < height - 1 && grid[y + 1][eastX].textContent == targetChar) {
+              queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
+            }
+          }
+          else break;
+        }
       }
-      for (let eastX = x + 1; eastX < width; eastX++) {
-        let currentNeighbor = grid[y][eastX];
-        if (currentNeighbor.textContent == targetChar) {
-          applyEdit(currentNeighbor);
-          if (y > 0  &&  grid[y - 1][eastX].textContent == targetChar) {
-            queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
-          }
-          if (y < height - 1 && grid[y + 1][eastX].textContent == targetChar) {
-            queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
-          }
-        }
-        else break;
+
+      for (let {cell, x, y} of queue) {
+        floodRow(cell, x, y);
       }
     }
-
-    for (let {cell, x, y} of queue) {
-      flood(cell, x, y);
-    }
+    updateHistory(event.target, flood);
+    flood(event.target, mouseTool.char);
   }
 }
 /*//////////////////////////////////////////////////////////////////////////////
@@ -298,9 +306,42 @@ function paletteSelect(event) {
   paletteButtons.forEach(b => b.className = 'palette');
   button.className = 'palette selected';
   mouseTool.char = button.textContent;
-  mouseTool.color = PALETTE[mouseTool.char].color;
 }
 
+/*//////////////////////////////////////////////////////////////////////////////
+-                                  UNDO/REDO                                   -
+//////////////////////////////////////////////////////////////////////////////*/
+let past = [], future = []; //[{cell, char, action}, ...]
+
+function updateHistory(cell, action) {
+  future = [];
+  if (past.length > 1000) past = past.slice(0, 500);
+  past.push({cell, char: cell.textContent, action});
+}
+
+function undo() {
+  if (!past.length) return;
+  let record = past.pop();
+  future.push({cell: record.cell, char: record.cell.textContent, action: record.action});
+  record.action(record.cell, record.char);
+}
+function redo() {
+  if(!future.length) return;
+  let record = future.pop();
+  past.push({cell: record.cell, char: record.cell.textContent, action: record.action});
+  record.action(record.cell, record.char);
+}
+
+window.addEventListener('keypress', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key == 'z') {
+    undo();
+  }
+});
+window.addEventListener('keypress', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key == 'y') {
+    redo();
+  }
+});
 /*//////////////////////////////////////////////////////////////////////////////
 -                            INFORMATION/FEEDBACK                              -
 //////////////////////////////////////////////////////////////////////////////*/
