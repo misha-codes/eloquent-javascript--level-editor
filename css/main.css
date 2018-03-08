@@ -32,7 +32,7 @@ button {
   padding: 4px;
   color: rgb(64, 64, 64);
   background-color: white;
-  height: 45px;
+  height: 40px;
 }
 .selected, button:active {
   background-color: rgb(64, 64, 64);
@@ -42,7 +42,7 @@ button:hover {
   border: 2px solid rgb(64, 64, 64);
 }
 .palette, .tool, .dialog > button {
-  width: 45px;
+  width: 40px;
 }
 
 #menu, #toolbar {
@@ -53,6 +53,10 @@ button:hover {
   background-color: white;
   position: fixed;
   z-index: 1;
+}
+
+#menu {
+  overflow-y: hidden;
 }
 
 #toolbar {
@@ -91,4 +95,11 @@ textarea {
   color: transparent;
   text-shadow: 0 0 0 white;
   background-color: rgb(64, 64, 64);
+}
+
+.material-icons {
+  vertical-align: middle;
+}
+.material-icons.md-18 {
+  font-size: 18px;
 }

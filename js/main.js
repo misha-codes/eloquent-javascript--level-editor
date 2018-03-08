@@ -34,15 +34,15 @@ function showNewDialog() {
   dialog.appendChild(heightField);
   dialog.appendChild(document.createTextNode(' '))
 
-  let ok = document.createElement('button');
-  ok.textContent = '🗸';
-  ok.addEventListener('click', confirmNew);
-  dialog.appendChild(ok);
+  let dialogYes = document.createElement('button');
+  dialogYes.innerHTML = '<i class="material-icons md-18">check</i>';
+  dialogYes.addEventListener('click', confirmOpen);
+  dialog.appendChild(dialogYes);
 
-  let no = document.createElement('button');
-  no.textContent = '✗';
-  no.addEventListener('click', removeCurrentDialog);
-  dialog.appendChild(no);
+  let dialogNo = document.createElement('button');
+  dialogNo.innerHTML = '<i class="material-icons md-18">close</i>';
+  dialogNo.addEventListener('click', removeCurrentDialog);
+  dialog.appendChild(dialogNo);
 
   menu.appendChild(dialog);
 }
@@ -79,15 +79,15 @@ function showOpenDialog() {
   dialog.appendChild(textField);
   dialog.appendChild(document.createTextNode(' '));
 
-  let ok = document.createElement('button');
-  ok.textContent = '🗸';
-  ok.addEventListener('click', confirmOpen);
-  dialog.appendChild(ok);
+  let dialogYes = document.createElement('button');
+  dialogYes.innerHTML = '<i class="material-icons md-18">check</i>';
+  dialogYes.addEventListener('click', confirmOpen);
+  dialog.appendChild(dialogYes);
 
-  let no = document.createElement('button');
-  no.textContent = '✗';
-  no.addEventListener('click', removeCurrentDialog);
-  dialog.appendChild(no);
+  let dialogNo = document.createElement('button');
+  dialogNo.innerHTML = '<i class="material-icons md-18">close</i>';
+  dialogNo.addEventListener('click', removeCurrentDialog);
+  dialog.appendChild(dialogNo);
 
   menu.appendChild(dialog);
 }
@@ -158,7 +158,10 @@ const PALETTE = {
   '|': {color: 'rgb(255, 100, 100)', help: 'moving lava (vertical)'},
   'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'}
 };
-const TOOLS = [brush, fill];
+const TOOLS = [
+  {tool: brush, icon: 'brush'},
+  {tool: fill, icon: 'format_color_fill'}
+];
 let mouseTool = {tool: brush, char: '.', color: 'rgb(52, 166, 251)'};
 function applyEdit(cell) {
   cell.textContent = mouseTool.char;
@@ -246,9 +249,9 @@ let toolButtons = [];
 for (let tool of TOOLS) {
   let button = document.createElement('button');
   button.className = 'tool';
-  button.functionTool = tool;
-  button.setAttribute('data-help', `${tool.name} tool`);
-  button.textContent = tool.name.slice(0, 2);
+  button.functionTool = tool.tool;
+  button.setAttribute('data-help', `${tool.tool.name} tool`);
+  button.innerHTML = `<i class="material-icons">${tool.icon}</i>`;
   annotate(button);
   button.addEventListener('click', toolSelect);
   toolButtons.push(button);
@@ -268,7 +271,7 @@ let chars = Object.keys(PALETTE);
 let paletteButtons = [];
 let palettePanel = document.createElement('div');
 palettePanel.style.borderTop = '1px solid rgb(64, 64, 64)';
-palettePanel.style.borderBottom = palettePanel.style.borderTop
+palettePanel.style.borderBottom = palettePanel.style.borderTop;
 palettePanel.style.paddingTop = '1px';
 palettePanel.style.paddingBottom = palettePanel.style.paddingTop;
 let row = document.createElement('div');
