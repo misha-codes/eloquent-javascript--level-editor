@@ -46,6 +46,8 @@ button:hover {
 }
 .edit:disabled {
   color: rgba(64, 64, 64, 0.5);
+  background-color: white;
+  border-color: white;
 }
 
 #menu, #toolbar {
