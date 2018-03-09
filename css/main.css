@@ -41,8 +41,11 @@ button {
 button:hover {
   border: 2px solid rgb(64, 64, 64);
 }
-.palette, .tool, .dialog > button {
+.palette, .tool, .edit, .dialog > button {
   width: 45px;
+}
+.edit:disabled {
+  color: rgba(64, 64, 64, 0.5);
 }
 
 #menu, #toolbar {

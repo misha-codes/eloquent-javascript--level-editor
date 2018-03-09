@@ -177,8 +177,9 @@ function applyEdit(cell, char) {
 }
 function brush(event) {
   if (event.buttons == 1) {
-    updateHistory(event.target, applyEdit);
-    applyEdit(event.target, mouseTool.char);
+    let cell = event.target;
+    updateHistory([cell], cell.textContent);
+    applyEdit(cell, mouseTool.char);
   }
 }
 
@@ -188,54 +189,54 @@ function fill(event) {
     event.type == 'mousedown' &&
     mouseTool.char != event.target.textContent
   ) {
-    function flood(startCell, char) {
-      let rows = Array.from(view.children);
-      let grid = rows.map(row => Array.from(row.children));
-      let width = grid[0].length, height = grid.length;
+    let rows = Array.from(view.children);
+    let grid = rows.map(row => Array.from(row.children));
+    let width = grid[0].length, height = grid.length;
 
-      let startY = rows.indexOf(startCell.parentNode);
-      let startX = grid[startY].indexOf(startCell);
+    let startCell = event.target;
+    let startY = rows.indexOf(startCell.parentNode);
+    let startX = grid[startY].indexOf(startCell);
 
-      let targetChar = startCell.textContent;
+    let targetChar = startCell.textContent;
+    let queue = [{cell: startCell, x: startX, y: startY}];
+    let changed = [];
 
-      let queue = [{cell: startCell, x: startX, y: startY}];
-
-      function floodRow(cell, x, y) {
-        if (cell.textContent != targetChar) return ;
-        for (let westX = x; westX >= 0; westX--) {
-          let currentNeighbor = grid[y][westX];
-          if (currentNeighbor.textContent == targetChar) {
-            applyEdit(currentNeighbor, char);
-            if (y > 0 && grid[y - 1][westX].textContent == targetChar) {
-              queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
-            }
-            if (y < height - 1 && grid[y + 1][westX].textContent == targetChar) {
-              queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
-            }
+    function flood(cell, x, y) {
+      if (cell.textContent != targetChar) return ;
+      for (let westX = x; westX >= 0; westX--) {
+        let currentNeighbor = grid[y][westX];
+        if (currentNeighbor.textContent == targetChar) {
+          applyEdit(currentNeighbor, mouseTool.char);
+          changed.push(currentNeighbor);
+          if (y > 0 && grid[y - 1][westX].textContent == targetChar) {
+            queue.push({cell: grid[y - 1][westX], x: westX, y: y - 1});
           }
-          else break;
-        }
-        for (let eastX = x + 1; eastX < width; eastX++) {
-          let currentNeighbor = grid[y][eastX];
-          if (currentNeighbor.textContent == targetChar) {
-            applyEdit(currentNeighbor, char);
-            if (y > 0  &&  grid[y - 1][eastX].textContent == targetChar) {
-              queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
-            }
-            if (y < height - 1 && grid[y + 1][eastX].textContent == targetChar) {
-              queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
-            }
+          if (y < height - 1 && grid[y + 1][westX].textContent == targetChar) {
+            queue.push({cell: grid[y + 1][westX], x: westX, y: y + 1});
           }
-          else break;
         }
+        else break;
       }
-
-      for (let {cell, x, y} of queue) {
-        floodRow(cell, x, y);
+      for (let eastX = x + 1; eastX < width; eastX++) {
+        let currentNeighbor = grid[y][eastX];
+        if (currentNeighbor.textContent == targetChar) {
+          applyEdit(currentNeighbor, mouseTool.char);
+          changed.push(currentNeighbor);
+          if (y > 0  &&  grid[y - 1][eastX].textContent == targetChar) {
+            queue.push({cell: grid[y - 1][eastX], x: eastX, y: y - 1});
+          }
+          if (y < height - 1 && grid[y + 1][eastX].textContent == targetChar) {
+            queue.push({cell: grid[y + 1][eastX], x: eastX, y: y + 1});
+          }
+        }
+        else break;
       }
     }
-    updateHistory(event.target, flood);
-    flood(event.target, mouseTool.char);
+
+    for (let {cell, x, y} of queue) {
+      flood(cell, x, y);
+    }
+    updateHistory(changed, targetChar);
   }
 }
 /*//////////////////////////////////////////////////////////////////////////////
@@ -311,25 +312,45 @@ function paletteSelect(event) {
 /*//////////////////////////////////////////////////////////////////////////////
 -                                  UNDO/REDO                                   -
 //////////////////////////////////////////////////////////////////////////////*/
-let past = [], future = []; //[{cell, char, action}, ...]
+class HistoryStack {
+  constructor() {
+    this.stack = [];
+  }
+  push(item) {
+    this.stack.push(item);
+    document.dispatchEvent(new CustomEvent('historyupdate'));
+  }
+  pop() {
+    let record = this.stack.pop()
+    document.dispatchEvent(new CustomEvent('historyupdate'));
+    return record;
+  }
+  clear() {
+    this.stack = [];
+    document.dispatchEvent(new CustomEvent('historyupdate'));
+  }
+  get length() { return this.stack.length; }
+}
 
-function updateHistory(cell, action) {
-  future = [];
+let past = new HistoryStack, future = new HistoryStack; //[{[cells], char}, ...]
+
+function updateHistory(cells, char) {
+  future.clear();
   if (past.length > 1000) past = past.slice(0, 500);
-  past.push({cell, char: cell.textContent, action});
+  past.push({cells, char});
 }
 
 function undo() {
   if (!past.length) return;
   let record = past.pop();
-  future.push({cell: record.cell, char: record.cell.textContent, action: record.action});
-  record.action(record.cell, record.char);
+  future.push({cells: record.cells, char: record.cells[0].textContent});
+  record.cells.forEach(cell => applyEdit(cell, record.char));
 }
 function redo() {
   if(!future.length) return;
   let record = future.pop();
-  past.push({cell: record.cell, char: record.cell.textContent, action: record.action});
-  record.action(record.cell, record.char);
+  past.push({cells: record.cells, char: record.cells[0].textContent});
+  record.cells.forEach(cell => applyEdit(cell, record.char));
 }
 
 window.addEventListener('keypress', (event) => {
@@ -342,6 +363,31 @@ window.addEventListener('keypress', (event) => {
     redo();
   }
 });
+
+let undoButton = document.createElement('button');
+undoButton.className = 'edit';
+undoButton.disabled = true;
+undoButton.innerHTML = '<i class="material-icons">undo</i>';
+undoButton.setAttribute('data-help', 'undo (ctrl/cmd + z)');
+annotate(undoButton);
+undoButton.addEventListener('click', undo);
+toolPanel.appendChild(undoButton);
+
+let redoButton = document.createElement('button');
+redoButton.className = 'edit';
+redoButton.disabled = true;
+redoButton.innerHTML = '<i class="material-icons">redo</i>';
+redoButton.setAttribute('data-help', 'redo (ctrl/cmd + y)');
+annotate(redoButton);
+redoButton.addEventListener('click', redo);
+toolPanel.appendChild(redoButton);
+
+document.addEventListener('historyupdate', () => {
+  if (past.length) undoButton.disabled = false;
+  else undoButton.disabled = true;
+  if (future.length) redoButton.disabled = false;
+  else redoButton.disabled = true;
+})
 /*//////////////////////////////////////////////////////////////////////////////
 -                            INFORMATION/FEEDBACK                              -
 //////////////////////////////////////////////////////////////////////////////*/
