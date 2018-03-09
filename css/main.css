@@ -34,12 +34,12 @@ button {
   background-color: white;
   height: 45px;
 }
+button:hover {
+  border: 2px solid rgb(64, 64, 64);
+}
 .selected, button:active {
   background-color: rgb(64, 64, 64);
   color: white;
-}
-button:hover {
-  border: 2px solid rgb(64, 64, 64);
 }
 .palette, .tool, .edit, .dialog > button {
   width: 45px;
@@ -49,6 +49,7 @@ button:hover {
   background-color: white;
   border-color: white;
 }
+
 
 #menu, #toolbar {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);

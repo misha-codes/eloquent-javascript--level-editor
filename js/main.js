@@ -274,18 +274,15 @@ for (let tool of TOOLS) {
   button.setAttribute('data-help', `${tool.tool.name} tool`);
   button.innerHTML = `<i class="material-icons">${tool.icon}</i>`;
   annotate(button);
-  button.addEventListener('click', toolSelect);
+  button.addEventListener('click', () => {
+    toolButtons.forEach(b => b.className = 'tool');
+    button.className = 'tool selected';
+    mouseTool.tool = button.functionTool;
+  });
   toolButtons.push(button);
   toolPanel.appendChild(button);
 }
 toolbar.appendChild(toolPanel);
-
-function toolSelect(event) {
-  let button = event.target;
-  toolButtons.forEach(b => b.className = 'tool');
-  button.className = 'tool selected';
-  mouseTool.tool = button.functionTool;
-}
 
 /*..............................palette buttons...............................*/
 let chars = Object.keys(PALETTE);
