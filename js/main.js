@@ -314,30 +314,36 @@ function paletteSelect(event) {
 -                                  UNDO/REDO                                   -
 //////////////////////////////////////////////////////////////////////////////*/
 class HistoryStack {
-  constructor() {
-    this.stack = [];
+  constructor(stack = []) {
+    this.stack = stack; //[{[cells], char}, ...]
   }
-  push(item) {
-    this.stack.push(item);
-    document.dispatchEvent(new CustomEvent('historyupdate'));
+  push(record) {
+    this.stack.push(record);
+    document.dispatchEvent(HistoryStack.updateEvent());
   }
   pop() {
     let record = this.stack.pop()
-    document.dispatchEvent(new CustomEvent('historyupdate'));
+    document.dispatchEvent(HistoryStack.updateEvent());
     return record;
   }
   clear() {
     this.stack = [];
-    document.dispatchEvent(new CustomEvent('historyupdate'));
+    document.dispatchEvent(HistoryStack.updateEvent());
+  }
+  drop(last) {
+    this.stack = this.stack.slice(0, last);
+    document.dispatchEvent(HistoryStack.updateEvent());
   }
   get length() { return this.stack.length; }
+
+  static updateEvent() { return new CustomEvent('historyupdate'); }
 }
 
-let past = new HistoryStack, future = new HistoryStack; //[{[cells], char}, ...]
+let past = new HistoryStack, future = new HistoryStack;
 
 function updateHistory(cells, char) {
   future.clear();
-  if (past.length > 1000) past = past.slice(0, 500);
+  if (past.length > 1000) past.drop(500);
   past.push({cells, char});
 }
 
