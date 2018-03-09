@@ -187,7 +187,7 @@ function applyEdit(cell, char) {
   }
 }
 function brush(event) {
-  if (event.buttons == 1) {
+  if (event.buttons == 1 && mouseTool.char != event.target.textContent) {
     let cell = event.target;
     updateHistory([cell], cell.textContent);
     applyEdit(cell, mouseTool.char);
@@ -250,6 +250,7 @@ function fill(event) {
     updateHistory(changed, targetChar);
   }
 }
+
 /*//////////////////////////////////////////////////////////////////////////////
 -                                 TOOLBAR                                      -
 //////////////////////////////////////////////////////////////////////////////*/
@@ -277,7 +278,7 @@ for (let tool of TOOLS) {
   toolButtons.push(button);
   toolPanel.appendChild(button);
 }
-toolbar.appendChild(toolPanel)
+toolbar.appendChild(toolPanel);
 
 function toolSelect(event) {
   let button = event.target;
