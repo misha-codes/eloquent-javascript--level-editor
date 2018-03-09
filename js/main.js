@@ -156,7 +156,8 @@ const PALETTE = {
   '+': {color: 'rgb(255, 100, 100)', help: 'lava'},
   '=': {color: 'rgb(255, 100, 100)', help: 'moving lava (horizontal)'},
   '|': {color: 'rgb(255, 100, 100)', help: 'moving lava (vertical)'},
-  'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'}
+  'v': {color: 'rgb(255, 100, 100)', help: 'dripping lava'},
+  'M': {color: 'rgb(128, 0, 128)', help: 'monster'}
 };
 const TOOLS = [
   {tool: brush, icon: 'brush'},
@@ -276,7 +277,7 @@ function toolSelect(event) {
 }
 
 /*..............................palette buttons...............................*/
-let chars = Object.keys(PALETTE);
+let chars = Object.keys(PALETTE); console.log(chars);
 let paletteButtons = [];
 let palettePanel = document.createElement('div');
 palettePanel.style.borderTop = '1px solid rgb(64, 64, 64)';
@@ -295,7 +296,7 @@ for (let i = 0; i < chars.length; i++) {
   paletteButtons.push(button);
   row.appendChild(button);
 
-  if ((i + 1) % 4 == 0) {
+  if ((i + 1) % 4 == 0 || i == chars.length - 1) {
     palettePanel.appendChild(row);
     row = document.createElement('div');
   }
