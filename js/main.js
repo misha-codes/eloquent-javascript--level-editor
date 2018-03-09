@@ -11,6 +11,23 @@
 /*//////////////////////////////////////////////////////////////////////////////
 -                                   MENU                                       -
 //////////////////////////////////////////////////////////////////////////////*/
+function createButton(content, onClick, className = '', help) {
+  let button = document.createElement('button');
+  button.className = className;
+
+  let contentAttr = Object.keys(content)[0]; //either textContent or innerHTML
+  button[contentAttr] = content[contentAttr];
+
+  if (help) {
+    button.setAttribute('data-help', help);
+    button.addEventListener('mouseenter', () => {
+      info.textContent = button.getAttribute('data-help');
+    });
+  }
+  button.addEventListener('click', onClick);
+  return button;
+}
+
 let menu = document.querySelector('#menu');
 
 /*```````````````````````````````````new``````````````````````````````````````*/
@@ -19,10 +36,7 @@ function removeCurrentDialog() {
   if (dialog) dialog.remove();
 }
 
-let newButton = document.createElement('button');
-newButton.textContent = 'new';
-newButton.style.width = '60px';
-newButton.addEventListener('click', showNewDialog);
+let newButton = createButton({'textContent': 'new'}, showNewDialog);
 menu.appendChild(newButton);
 
 function showNewDialog() {
@@ -44,14 +58,16 @@ function showNewDialog() {
   dialog.appendChild(heightField);
   dialog.appendChild(document.createTextNode(' '))
 
-  let dialogYes = document.createElement('button');
-  dialogYes.innerHTML = '<i class="material-icons md-18">check</i>';
-  dialogYes.addEventListener('click', confirmNew);
+  let dialogYes = createButton(
+    {'innerHTML': '<i class="material-icons md-18">check</i>'},
+    confirmNew
+  );
   dialog.appendChild(dialogYes);
 
-  let dialogNo = document.createElement('button');
-  dialogNo.innerHTML = '<i class="material-icons md-18">close</i>';
-  dialogNo.addEventListener('click', removeCurrentDialog);
+  let dialogNo = createButton(
+    {'innerHTML': '<i class="material-icons md-18">close</i>'},
+    removeCurrentDialog
+  );
   dialog.appendChild(dialogNo);
 
   menu.appendChild(dialog);
@@ -68,10 +84,7 @@ function confirmNew() {
 }
 
 /*`````````````````````````````````open``````````````````````````````````````*/
-let openButton = document.createElement('button');
-openButton.textContent = 'open';
-openButton.style.width = '60px';
-openButton.addEventListener('click', showOpenDialog);
+let openButton = createButton({'textContent': 'open'}, showOpenDialog);
 menu.appendChild(openButton);
 
 function showOpenDialog() {
@@ -89,14 +102,16 @@ function showOpenDialog() {
   dialog.appendChild(textField);
   dialog.appendChild(document.createTextNode(' '));
 
-  let dialogYes = document.createElement('button');
-  dialogYes.innerHTML = '<i class="material-icons md-18">check</i>';
-  dialogYes.addEventListener('click', confirmOpen);
+  let dialogYes = createButton(
+    {'innerHTML': '<i class="material-icons md-18">check</i>'},
+    confirmOpen
+  );
   dialog.appendChild(dialogYes);
 
-  let dialogNo = document.createElement('button');
-  dialogNo.innerHTML = '<i class="material-icons md-18">close</i>';
-  dialogNo.addEventListener('click', removeCurrentDialog);
+  let dialogNo = createButton(
+    {'innerHTML': '<i class="material-icons md-18">close</i>'},
+    removeCurrentDialog
+  );
   dialog.appendChild(dialogNo);
 
   menu.appendChild(dialog);
@@ -136,10 +151,7 @@ function confirmOpen() {
 }
 
 /*`````````````````````````````````copy``````````````````````````````````````*/
-let copyButton = document.createElement('button');
-copyButton.textContent = 'copy';
-copyButton.style.width = '60px';
-copyButton.addEventListener('click', copyLevel);
+let copyButton = createButton({'textContent': 'copy'}, copyLevel);
 menu.appendChild(copyButton);
 function copyLevel() {
   let level = '';
@@ -256,29 +268,21 @@ function fill(event) {
 //////////////////////////////////////////////////////////////////////////////*/
 let toolbar = document.querySelector('#toolbar');
 
-function annotate(button) {
-  button.addEventListener('mouseenter', () => {
-    info.textContent = button.getAttribute('data-help');
-  });
-}
-
 /*................................tool buttons................................*/
 let toolPanel = document.createElement('div');
 toolPanel.style.paddingBottom = '1px';
 let toolButtons = [];
 
 for (let tool of TOOLS) {
-  let button = document.createElement('button');
-  button.className = 'tool';
-  button.functionTool = tool.tool;
-  button.setAttribute('data-help', `${tool.tool.name} tool`);
-  button.innerHTML = `<i class="material-icons">${tool.icon}</i>`;
-  annotate(button);
-  button.addEventListener('click', () => {
-    toolButtons.forEach(b => b.className = 'tool');
-    button.className = 'tool selected';
-    mouseTool.tool = button.functionTool;
-  });
+  let button = createButton(
+    {'innerHTML': `<i class="material-icons">${tool.icon}</i>`},
+    () => {
+      toolButtons.forEach(b => b.className = 'tool');
+      button.className = 'tool selected';
+      mouseTool.tool = tool.tool;
+    },
+    'tool', `${tool.tool.name}`
+  );
   toolButtons.push(button);
   toolPanel.appendChild(button);
 }
@@ -292,15 +296,14 @@ palettePanel.style.borderTop = '1px solid rgb(64, 64, 64)';
 palettePanel.style.borderBottom = palettePanel.style.borderTop;
 palettePanel.style.paddingTop = '1px';
 palettePanel.style.paddingBottom = palettePanel.style.paddingTop;
-let row = document.createElement('div');
-for (let i = 0; i < chars.length; i++) {
+for (let i = 0, row = document.createElement('div'); i < chars.length; i++) {
   let char = chars[i];
-  let button = document.createElement('button');
-  button.className = 'palette';
-  button.setAttribute('data-help', PALETTE[char].help);
-  annotate(button);
-  button.textContent = char;
-  button.addEventListener('click', paletteSelect);
+  let button = createButton({'textContent': char}, () => {
+    paletteButtons.forEach(b => b.className = 'palette');
+    button.className = 'palette selected';
+    mouseTool.char = button.textContent;
+  }, 'palette', PALETTE[char].help);
+
   paletteButtons.push(button);
   row.appendChild(button);
 
@@ -310,13 +313,6 @@ for (let i = 0; i < chars.length; i++) {
   }
 }
 toolbar.appendChild(palettePanel);
-
-function paletteSelect(event) {
-  let button = event.target;
-  paletteButtons.forEach(b => b.className = 'palette');
-  button.className = 'palette selected';
-  mouseTool.char = button.textContent;
-}
 
 /*//////////////////////////////////////////////////////////////////////////////
 -                                  UNDO/REDO                                   -
@@ -383,22 +379,18 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
-let undoButton = document.createElement('button');
-undoButton.className = 'edit';
+let undoButton = createButton(
+  {'innerHTML': '<i class="material-icons">undo</i>'},
+  undo, 'edit', 'undo (ctrl/cmd + z)'
+);
 undoButton.disabled = true;
-undoButton.innerHTML = '<i class="material-icons">undo</i>';
-undoButton.setAttribute('data-help', 'undo (ctrl/cmd + z)');
-annotate(undoButton);
-undoButton.addEventListener('click', undo);
 toolPanel.appendChild(undoButton);
 
-let redoButton = document.createElement('button');
-redoButton.className = 'edit';
+let redoButton = createButton(
+  {'innerHTML': '<i class="material-icons">redo</i>'},
+  redo, 'edit', 'redo (ctrl/cmd + y)'
+);
 redoButton.disabled = true;
-redoButton.innerHTML = '<i class="material-icons">redo</i>';
-redoButton.setAttribute('data-help', 'redo (ctrl/cmd + y)');
-annotate(redoButton);
-redoButton.addEventListener('click', redo);
 toolPanel.appendChild(redoButton);
 
 document.addEventListener('historyupdate', () => {

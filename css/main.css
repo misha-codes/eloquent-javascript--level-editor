@@ -44,6 +44,9 @@ button:hover {
 .palette, .tool, .edit, .dialog > button {
   width: 45px;
 }
+#menu > button {
+  width: 60px;
+}
 .edit:disabled {
   color: rgba(64, 64, 64, 0.5);
   background-color: white;
