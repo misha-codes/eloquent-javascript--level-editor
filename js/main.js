@@ -354,7 +354,6 @@ function updateHistory(cells, char) {
   if (past.length > 1000) past.drop(500);
   past.push({cells, char});
 }
-
 function clearHistory() {
   future.clear();
   past.clear();
@@ -373,12 +372,12 @@ function redo() {
   record.cells.forEach(cell => applyEdit(cell, record.char));
 }
 
-window.addEventListener('keypress', (event) => {
+window.addEventListener('keydown', (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key == 'z') {
     undo();
   }
 });
-window.addEventListener('keypress', (event) => {
+window.addEventListener('keydown', (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key == 'y') {
     redo();
   }
