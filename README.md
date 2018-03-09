@@ -17,7 +17,7 @@ through copy/pasting.
 
 Can easily be configured to work with the electronic life project from  
 the 2nd edition of EJS or with any other simple char grid project by altering  
-the `PALETTE` constant and some minor customization of the color-scheme-related  
+the `PALETTE` constant and some customization of the color/char-scheme-related  
 code.
 
 ### Credits
