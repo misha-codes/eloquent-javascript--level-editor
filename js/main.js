@@ -424,6 +424,7 @@ toolbar.appendChild(infoPanel);
 let view = document.querySelector('#view');
 view.style.left = `${toolbar.getBoundingClientRect().right + 8}px`;
 function renderView(width, height) {
+  future.clear(); past.clear();
   Array.from(document.querySelectorAll('#view > div'))
     .forEach(div => div.remove());
   for (let y = 0; y < height; y++) {
