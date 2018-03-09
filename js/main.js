@@ -277,7 +277,7 @@ function toolSelect(event) {
 }
 
 /*..............................palette buttons...............................*/
-let chars = Object.keys(PALETTE); console.log(chars);
+let chars = Object.keys(PALETTE);
 let paletteButtons = [];
 let palettePanel = document.createElement('div');
 palettePanel.style.borderTop = '1px solid rgb(64, 64, 64)';
