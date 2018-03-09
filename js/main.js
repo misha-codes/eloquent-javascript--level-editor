@@ -1,3 +1,13 @@
+/*==============================================================================
+.                                                                              .
+.                                 WARNING                                      .
+.   I am extremely new to all of this, so the code below is certainly not      .
+.   even close to being a good way to achieve any of the things I wanted,      .
+.   and is instead mostly a mess of spaghetti and hacky workarounds.           .
+.   (The same obviously goes for the other parts of this project)              .
+.                                                                              .
+==============================================================================*/
+
 /*//////////////////////////////////////////////////////////////////////////////
 -                                   MENU                                       -
 //////////////////////////////////////////////////////////////////////////////*/
