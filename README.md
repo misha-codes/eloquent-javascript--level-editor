@@ -8,8 +8,8 @@ Should work fine in Firefox and Chrome
 ### About
 
 I started reading the platformer chapter of EJS but got immediately sidetracked  
-into making this tool since working with level strings in a regular text editor  
-is very inconvenient.  
+into making this tool since making your own levels is fun, but working with  
+level strings in a regular text editor is absolutely not.  
 
 It provides some very basic text-based grid editing functionality  
 and allows you to save your work or open an existing level   
@@ -17,13 +17,13 @@ through copy/pasting.
 
 Can easily be configured to work with the electronic life project from  
 the 2nd edition of EJS or with any other simple char grid project by altering  
-the `PALETTE` constant and tweaking the `applyEdit` function.
+the `PALETTE` constant and some minor customization of the color-scheme-related  
+code.
 
 ### Credits
 
 Eloquent JavaScript was written by Marijn Haverbeke, you can read the latest  
 edition at http://eloquentjavascript.net/
-The specific chapter relevant to this project is http://eloquentjavascript.net/16_game.html  
 
-Icons used in this project are the open source material icons by Google and can  
+Icons used in this project are the open source material icons by Google, they can  
 be found at https://material.io/icons/
