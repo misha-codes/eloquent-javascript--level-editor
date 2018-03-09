@@ -68,6 +68,7 @@ textarea, input, button {
 }
 textarea {
   overflow: hidden;
+  vertical-align: middle;
 }
 .dialog {
   padding-left: 2px;
