@@ -58,10 +58,6 @@ button:hover {
   z-index: 1;
 }
 
-#menu {
-  overflow-y: hidden;
-}
-
 #toolbar {
   top: 60px;
   width: 180px;

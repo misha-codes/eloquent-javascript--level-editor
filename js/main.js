@@ -387,7 +387,8 @@ document.addEventListener('historyupdate', () => {
   else undoButton.disabled = true;
   if (future.length) redoButton.disabled = false;
   else redoButton.disabled = true;
-})
+});
+
 /*//////////////////////////////////////////////////////////////////////////////
 -                            INFORMATION/FEEDBACK                              -
 //////////////////////////////////////////////////////////////////////////////*/
