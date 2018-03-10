@@ -7,7 +7,15 @@
 .   (The same obviously goes for the other parts of this project)              .
 .                                                                              .
 ==============================================================================*/
-
+/*==============================================================================
+.                                                                              .
+.                             ANOTHER WARNING                                  .
+.   There are very few comments (two, to be precise), and I don't feel         .
+.   like many are needed for any single section of the code, but if the        .
+.   bigger picture seems obscure, please refer to the project's wiki,          .
+.   you will find a brief overview of how things fit together there.           .
+.                                                                              .
+==============================================================================*/
 /*//////////////////////////////////////////////////////////////////////////////
 -                                   MENU                                       -
 //////////////////////////////////////////////////////////////////////////////*/
