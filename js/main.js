@@ -326,27 +326,27 @@ toolbar.appendChild(palettePanel);
 -                                  UNDO/REDO                                   -
 //////////////////////////////////////////////////////////////////////////////*/
 class HistoryStack {
-  constructor(stack = []) {
-    this.stack = stack; //[{[cells], char}, ...]
+  constructor() {
+    this._stack = []; //[{[cells], char}, ...]
   }
   push(record) {
-    this.stack.push(record);
+    this._stack.push(record);
     document.dispatchEvent(HistoryStack.updateEvent());
   }
   pop() {
-    let record = this.stack.pop()
+    let record = this._stack.pop()
     document.dispatchEvent(HistoryStack.updateEvent());
     return record;
   }
   clear() {
-    this.stack = [];
+    this._stack = [];
     document.dispatchEvent(HistoryStack.updateEvent());
   }
   drop(last) {
-    this.stack = this.stack.slice(0, last);
+    this._stack = this._stack.slice(0, last);
     document.dispatchEvent(HistoryStack.updateEvent());
   }
-  get length() { return this.stack.length; }
+  get length() { return this._stack.length; }
 
   static updateEvent() { return new CustomEvent('historyupdate'); }
 }
