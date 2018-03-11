@@ -435,8 +435,6 @@ function renderView(width, height) {
       let cell = document.createElement('div');
       cell.className = 'cell';
       cell.textContent = '.';
-      cell.style.left = `${x * 20}px`;
-      cell.style.top = `${y * 20}px`;
       cell.addEventListener('mousedown', edit);
       cell.addEventListener('mouseover', edit);
       row.appendChild(cell);
