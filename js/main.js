@@ -253,15 +253,15 @@ let toolPanel = document.createElement('div');
 toolPanel.style.paddingBottom = '1px';
 let toolButtons = [];
 
-for (let tool of TOOLS) {
+for (let {tool, icon} of TOOLS) {
   let button = createButton(
-    {'innerHTML': `<i class="material-icons">${tool.icon}</i>`},
+    {'innerHTML': `<i class="material-icons">${icon}</i>`},
     () => {
       toolButtons.forEach(b => b.className = 'tool');
       button.className = 'tool selected';
-      mouseTool.tool = tool.tool;
+      mouseTool.tool = tool;
     },
-    'tool', `${tool.tool.name}`
+    'tool', `${tool.name}`
   );
   toolButtons.push(button);
   toolPanel.appendChild(button);
