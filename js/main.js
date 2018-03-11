@@ -19,12 +19,44 @@
 /*//////////////////////////////////////////////////////////////////////////////
 -                                   MENU                                       -
 //////////////////////////////////////////////////////////////////////////////*/
-function createButton(content, onClick, className = '', help) {
+function showDialog(fields, confirm, help = '') {
+  removeCurrentDialog();
+
+  let dialog = document.createElement('span');
+  dialog.className = 'dialog';
+
+  for (let {type, description} of fields) {
+    let field = document.createElement(type);
+    field.className = 'field';
+    dialog.appendChild(document.createTextNode(` ${description} `));
+    dialog.appendChild(field);
+  }
+  dialog.appendChild(document.createTextNode(' '));
+
+  let yes = createButton(
+    {'innerHTML': '<i class="material-icons md-18">check</i>'},
+    confirm
+  );
+  dialog.appendChild(yes);
+
+  let no = createButton(
+    {'innerHTML': '<i class="material-icons md-18">close</i>'},
+    removeCurrentDialog
+  );
+  dialog.appendChild(no);
+
+  info.textContent = help;
+  menu.appendChild(dialog);
+}
+function removeCurrentDialog() {
+  let dialog = document.querySelector('.dialog');
+  if (dialog) dialog.remove();
+}
+
+function createButton(label, onClick, className = '', help) {
   let button = document.createElement('button');
   button.className = className;
-
-  let contentAttr = Object.keys(content)[0]; //either textContent or innerHTML
-  button[contentAttr] = content[contentAttr];
+  Object.assign(button, label); // textContent or innerHTML
 
   if (help) {
     button.setAttribute('data-help', help);
@@ -39,47 +71,14 @@ function createButton(content, onClick, className = '', help) {
 let menu = document.querySelector('#menu');
 
 /*```````````````````````````````````new``````````````````````````````````````*/
-function removeCurrentDialog() {
-  let dialog = document.querySelector('.dialog');
-  if (dialog) dialog.remove();
-}
-
-let newButton = createButton({'textContent': 'new'}, showNewDialog);
+let newButton = createButton({'textContent': 'new'}, () => showDialog(
+  [
+    {type: 'input', description: 'width'},
+    {type: 'input', description: 'height'}
+  ],
+  confirmNew, 'please enter width and height in cells'
+));
 menu.appendChild(newButton);
-
-function showNewDialog() {
-  removeCurrentDialog();
-
-  info.textContent = 'please enter width and height in cells';
-
-  let dialog = document.createElement('span');
-  dialog.className = 'dialog';
-
-  let widthField = document.createElement('input');
-  widthField.className = 'field';
-  dialog.appendChild(document.createTextNode(' width: '));
-  dialog.appendChild(widthField);
-
-  let heightField = document.createElement('input');
-  heightField.className = 'field';
-  dialog.appendChild(document.createTextNode(' height: '));
-  dialog.appendChild(heightField);
-  dialog.appendChild(document.createTextNode(' '))
-
-  let dialogYes = createButton(
-    {'innerHTML': '<i class="material-icons md-18">check</i>'},
-    confirmNew
-  );
-  dialog.appendChild(dialogYes);
-
-  let dialogNo = createButton(
-    {'innerHTML': '<i class="material-icons md-18">close</i>'},
-    removeCurrentDialog
-  );
-  dialog.appendChild(dialogNo);
-
-  menu.appendChild(dialog);
-}
 
 function confirmNew() {
   let fields = document.querySelectorAll('.field');
@@ -92,38 +91,11 @@ function confirmNew() {
 }
 
 /*`````````````````````````````````open``````````````````````````````````````*/
-let openButton = createButton({'textContent': 'open'}, showOpenDialog);
+let openButton = createButton({'textContent': 'open'}, () => showDialog(
+  [{type: 'textarea', description: 'level'}],
+  confirmOpen, 'please paste a level string to parse'
+));
 menu.appendChild(openButton);
-
-function showOpenDialog() {
-  removeCurrentDialog();
-
-  info.textContent = 'please paste a level string to parse';
-
-  let dialog = document.createElement('span');
-  dialog.className = 'dialog';
-
-  dialog.appendChild(document.createTextNode(' level: '));
-
-  let textField = document.createElement('textarea');
-  textField.className = 'field';
-  dialog.appendChild(textField);
-  dialog.appendChild(document.createTextNode(' '));
-
-  let dialogYes = createButton(
-    {'innerHTML': '<i class="material-icons md-18">check</i>'},
-    confirmOpen
-  );
-  dialog.appendChild(dialogYes);
-
-  let dialogNo = createButton(
-    {'innerHTML': '<i class="material-icons md-18">close</i>'},
-    removeCurrentDialog
-  );
-  dialog.appendChild(dialogNo);
-
-  menu.appendChild(dialog);
-}
 
 function confirmOpen() {
   let level = document.querySelector('textarea').value.trim().split('\n');
@@ -327,7 +299,7 @@ toolbar.appendChild(palettePanel);
 //////////////////////////////////////////////////////////////////////////////*/
 class HistoryStack {
   constructor() {
-    this._stack = []; //[{[cells], char}, ...]
+    this._stack = []; //[{[cell, ...], char}, ...]
   }
   push(record) {
     this._stack.push(record);
@@ -376,12 +348,12 @@ function redo() {
   record.cells.forEach(cell => applyEdit(cell, record.char));
 }
 
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key == 'z') {
     undo();
   }
 });
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key == 'y') {
     redo();
   }
@@ -449,7 +421,7 @@ function edit(event) {
 /*//////////////////////////////////////////////////////////////////////////////
 -                                INITIAL SETUP                                 -
 //////////////////////////////////////////////////////////////////////////////*/
-showOpenDialog();
+openButton.dispatchEvent(new MouseEvent('click'));
 document.querySelector('.field').value = `
 ######################
 #@@@ooo@o@@@ooo==o==o#
